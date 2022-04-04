@@ -48,7 +48,7 @@ int main() {
     initGlobalVariables();
     sf::RenderWindow window(sf::VideoMode(screenWidth/2, screenHeight), 
                             GAME_NAME);    
-    Character character = Character(charPosX,charPosY);    
+    Character character = Character(charPosX,charPosY,screenWidth/2);    
     game_loop(window, character);
     return 0;
 }
