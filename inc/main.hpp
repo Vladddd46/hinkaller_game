@@ -4,6 +4,5 @@
 #include <string>
 #include "loadTextures.hpp"
 #include "Character.hpp"
-
-
-#define GAME_NAME "HINKELLER"
+#include "config.hpp"
+#include "Background.hpp"

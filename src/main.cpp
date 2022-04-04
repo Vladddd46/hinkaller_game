@@ -9,10 +9,13 @@ void initGlobalVariables() {
     screenWidth = sf::VideoMode::getDesktopMode().width;
     screenHeight = sf::VideoMode::getDesktopMode().height;
     charPosX = 0;
-    charPosY = screenHeight-(screenHeight*0.35);
+    charPosY = screenHeight-(screenHeight*0.3);
 }
 
+
 void game_loop(sf::RenderWindow &window, Character &character) {
+    Background bg = Background();
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event))
@@ -33,6 +36,7 @@ void game_loop(sf::RenderWindow &window, Character &character) {
         }
 
         window.clear();
+        window.draw(bg.sprite);
         window.draw(character.sprite);
         window.display();
     }
