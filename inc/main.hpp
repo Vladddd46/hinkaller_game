@@ -6,3 +6,4 @@
 #include "Character.hpp"
 #include "config.hpp"
 #include "Background.hpp"
+#include "FallingObject.hpp"
