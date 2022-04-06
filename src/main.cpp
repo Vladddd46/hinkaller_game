@@ -3,32 +3,57 @@
 
 int screenWidth;
 int screenHeight;
-int charPosX;
-int charPosY;
+int characterInitPositionX;
+int characterInitPositionY;
+int gameWindowWidth;
+int gameWindowHeigh;
+int numberOfSecondsAfterGameStart;
 
 void initGlobalVariables() {
     screenWidth = sf::VideoMode::getDesktopMode().width;
     screenHeight = sf::VideoMode::getDesktopMode().height;
-    charPosX = 0;
-    charPosY = screenHeight-(screenHeight*0.3);
+
+    characterInitPositionX = 0;
+    characterInitPositionY = screenHeight-(screenHeight*0.3);
+
+    gameWindowWidth = screenWidth/2;
+    gameWindowHeigh = screenHeight;
+
     srand(time(NULL));
+
+    numberOfSecondsAfterGameStart = 0;
 }
 
+
 void game_loop(sf::RenderWindow &window, Character &character) {
-    Background bg = Background();
+    Background background = Background(BACK_GROUND_PATH, 1.85, 1.85);
+    Score score = Score(SCORE_FONT_PATH, 
+                        sf::Color::Black, 
+                        (gameWindowWidth)-(gameWindowWidth/2) - 55, 
+                        0);
+    sf::Clock timeClock;
+    timeClock.restart();
+    
+    sf::Clock clockForAnimation;
+    float time;
 
-    FallingObject hink = FallingObject("textures/fallingObjects/hink.png", rand() % (screenWidth/2), 0);
+    int numberOfCaughtItems = 0;
+    int maxNumberOfFallingObjectsCanSpawn = 1;
 
-    sf::Clock clockForSpawning;
-    clockForSpawning.restart();
+    FallingObject hink = FallingObject("textures/fallingObjects/hink.png", rand() % (gameWindowWidth-10), 0);
+    
+    FallingObject fallingObjects[20];
+    std::string texturePath = "textures/fallingObjects/hink.png";
+    sf::Texture texture;
+    texture.loadFromFile(texturePath);
 
-    sf::Clock clock;
     while (window.isOpen()) {
-        float time = clock.getElapsedTime().asMilliseconds();
-        clock.restart();
+        time = clockForAnimation.getElapsedTime().asMilliseconds();
+        clockForAnimation.restart();
+
+        // event for closing window
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
@@ -45,33 +70,45 @@ void game_loop(sf::RenderWindow &window, Character &character) {
         }
 
         if(character.sprite.getGlobalBounds().intersects(hink.sprite.getGlobalBounds())) {
-            hink.setDraw(1);
-            hink.sprite.setPosition(rand()%(screenWidth/2), 0);
+            hink.spawn(gameWindowWidth); // respawn
+            numberOfCaughtItems += 1;
+            score.setScore(numberOfCaughtItems);
+            // falling object.isFalling = false
         }
-        else if ( hink.sprite.getPosition().y > character.sprite.getPosition().y+100){
-            hink.sprite.setPosition(rand()%(screenWidth/2), 0);
+        else if (hink.sprite.getPosition().y > character.sprite.getPosition().y+100) {
+            hink.spawn(gameWindowWidth);
         }
         else {  
             hink.fall(time);
         }
+
+        // drawing objects
         window.clear();
-        window.draw(bg.sprite);
+        window.draw(background.sprite);
         window.draw(character.sprite);
         window.draw(hink.sprite);
-        if (clockForSpawning.getElapsedTime().asSeconds() > 1) {
-            clockForSpawning.restart();
+        if (timeClock.getElapsedTime().asSeconds() > 1) {
+            timeClock.restart();
+            numberOfSecondsAfterGameStart += 1;
+            if (maxNumberOfFallingObjectsCanSpawn < 5 
+                && numberOfSecondsAfterGameStart%10) {
+                maxNumberOfFallingObjectsCanSpawn += 1;
+            }
         }
+        window.draw(score.text);
         window.display();
     }
 }
 
 
-
 int main() {
     initGlobalVariables();
-    sf::RenderWindow window(sf::VideoMode(screenWidth/2, screenHeight), 
-                            GAME_NAME);    
-    Character character = Character(charPosX,charPosY,screenWidth/2);    
+    sf::RenderWindow window(sf::VideoMode(gameWindowWidth, screenHeight), 
+                            GAME_NAME); 
+
+    Character character = Character(characterInitPositionX,
+                                    characterInitPositionY,
+                                    gameWindowWidth);    
     game_loop(window, character);
     return 0;
 }

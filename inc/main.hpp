@@ -7,3 +7,4 @@
 #include "config.hpp"
 #include "Background.hpp"
 #include "FallingObject.hpp"
+#include "Score.hpp"

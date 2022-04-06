@@ -4,7 +4,9 @@
 
 class FallingObject {
 private:
-    bool mustBeDrew;
+    int posX;
+    int posY;
+    bool isFalling;
 public:
     sf::Texture texture;
     sf::Sprite sprite;
@@ -12,17 +14,17 @@ public:
 
     FallingObject();
 
-    void setDraw(bool val);
-
-    bool getDraw();
-
     void fall(float time);
 
-    FallingObject(const FallingObject &other) {
-        std::cout<<"copy"<<std::endl;
-    }
+    void setTexture(sf::Texture texture);
 
-    ~FallingObject() {
-        std::cout << "Destructor: " << this << std::endl;
-    }
+    void spawn(int gameWindowWidth);
+
+    void setIsFalling(bool val);
+
+    int getIsFalling();
+
+    FallingObject(const FallingObject &other);
+
+    ~FallingObject();
 };
