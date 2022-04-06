@@ -16,7 +16,10 @@ void initGlobalVariables() {
 void game_loop(sf::RenderWindow &window, Character &character) {
     Background bg = Background();
 
+    sf::Clock clock;
     while (window.isOpen()) {
+        float time = clock.getElapsedTime().asMilliseconds();
+        clock.restart();
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -25,10 +28,10 @@ void game_loop(sf::RenderWindow &window, Character &character) {
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            character.move_left();
+            character.move_left(time);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            character.move_right();
+            character.move_right(time);
         }
         else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Right) &&
                  !sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
