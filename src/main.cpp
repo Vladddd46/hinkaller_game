@@ -110,18 +110,19 @@ void game_loop(sf::RenderWindow &window, Character &character) {
     std::map<std::string, sf::Texture> texturesForFallingObjects = loadFallingObjectTextures();
     FallingObject fallingObjects[MAX_FALLING_OBJECTS_IN_ARRAY];
 
-    // TODO: replace setting texutere in enableNewFallingObjects func.
-    for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
-        fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);
-    }
-
     while (window.isOpen()) {
         time = clockForAnimation.getElapsedTime().asMilliseconds();
         clockForAnimation.restart();
         closeWindowEventCheck(window);
 
         handleCharacterMovements(character, time);
-        numberOfCaughtItems += checkIfCharacterCaughtObject(character,fallingObjects);
+        int caughtObjects = checkIfCharacterCaughtObject(character,fallingObjects);
+        if (caughtObjects == -1) {
+            score.setScore(-1);
+            int c;
+            std::cin >> c;
+        }
+        numberOfCaughtItems+= caughtObjects;
         score.setScore(numberOfCaughtItems);
         disableObjectsWhichAreOutOfScreen(fallingObjects, gameWindowHeigh);
         makeObjectsFall(fallingObjects, time);
@@ -133,7 +134,7 @@ void game_loop(sf::RenderWindow &window, Character &character) {
                                         rand()%maxNumberOfFallingObjectsCanSpawn+minNumberOfFallingObjectsCanSpawn, 
                                         gameWindowWidth,
                                         minFallingSpeed,
-                                        maxFallingSpeed);
+                                        maxFallingSpeed, texturesForFallingObjects);
             }
             timeClock.restart();
         }

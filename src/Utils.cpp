@@ -62,25 +62,43 @@ void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHi
 // Checks whether user object and falling object intersects.
 // returns number of intersections.
 int checkIfCharacterCaughtObject(Character &character, FallingObject fallingObjects[]) {
-    int caught = 0;
+    int numberOfCaughtObjects = 0;
+
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
         if(character.sprite.getGlobalBounds().intersects(fallingObjects[i].sprite.getGlobalBounds()) 
-            && fallingObjects[i].getIsFalling()==true) {
-            caught += 1;
-            fallingObjects[i].setIsFalling(false);                
+           && fallingObjects[i].getIsFalling()==true) {
+            numberOfCaughtObjects += 1;
+            fallingObjects[i].setIsFalling(false);
+            if (fallingObjects[i].getIsFriendly() == false) {
+                return -1;
+            };                
         }
     }
-    return caught;
+    return numberOfCaughtObjects;
 }
 
 
-void enableNewFallingObjects(FallingObject fallingObjects[], int number, int widthOfGameWindow, int minFallSpeed, int maxFallSpeed) {
+void enableNewFallingObjects(FallingObject fallingObjects[], 
+                             int number, 
+                             int widthOfGameWindow, 
+                             int minFallSpeed, 
+                             int maxFallSpeed,
+                             std::map<std::string, sf::Texture> &texturesForFallingObjects) {
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
         if (fallingObjects[i].getIsFalling()==false && number > 0) {
             fallingObjects[i].setIsFalling(true);
             fallingObjects[i].spawn(rand()%(widthOfGameWindow-15), -10);
             fallingObjects[i].setSpeed(rand()%maxFallSpeed+minFallSpeed);
-            number--;   
+
+            if ((rand()%2+1)%2 == 0) {
+                fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);
+                fallingObjects[i].setIsFriendly(true);
+            }
+            else {
+                fallingObjects[i].setTexture(texturesForFallingObjects["bomb"]);
+                fallingObjects[i].setIsFriendly(false);
+            }
+            number--;
         }
     }
 }

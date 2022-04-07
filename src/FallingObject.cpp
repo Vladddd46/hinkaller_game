@@ -10,6 +10,7 @@ FallingObject::FallingObject(std::string texturePath, int posX, int posY) {
     sprite.scale(0.3, 0.3);
     isFalling = false;
     this->speed=rand()%4 + 3;
+    this->isFriendly = true;
 }
 
 void FallingObject::fall(float time) {
@@ -19,7 +20,7 @@ void FallingObject::fall(float time) {
 void FallingObject::setTexture(sf::Texture texture) {
     this->texture = texture;
     sprite.setTexture(this->texture);
-    sprite.scale(0.3, 0.3);
+    // sprite.scale(0.3, 0.3);
 }
 
 void FallingObject::setIsFalling(bool val) {
@@ -38,12 +39,22 @@ void FallingObject::setSpeed(int speed) {
     this->speed = speed;
 }
 
+void FallingObject::setIsFriendly(bool val) {
+    this->isFriendly = val;
+}
+
+bool FallingObject::getIsFriendly() {
+    return this->isFriendly;
+}
+
 FallingObject::FallingObject() {
     // std::cout << "Constructor" << std::endl; // debug
-    this->posX=0;
-    this->posY=0;
-    this->isFalling = false;
-    this->speed=rand()%4 + 3;
+    this->posX=0; // spawn position x
+    this->posY=0; // spawn position Y
+    this->isFalling = false; // if object is falling.
+    this->isFriendly = true; // is object can be gathered or not
+    this->speed=rand()%4 + 3; // speed of falling.
+    sprite.scale(0.3, 0.3); // object scaling
 }
 
 FallingObject::FallingObject(const FallingObject &other) {

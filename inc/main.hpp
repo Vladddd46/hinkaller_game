@@ -15,4 +15,9 @@ void makeObjectsFall(FallingObject fallingObjects[], float time);
 void drawFallingObjects(sf::RenderWindow &window, FallingObject fallingObjects[]);
 void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHighOfGameWindow);
 int checkIfCharacterCaughtObject(Character &character, FallingObject fallingObjects[]);
-void enableNewFallingObjects(FallingObject fallingObjects[], int number, int widthOfGameWindow, int minFallSpeed, int maxFallSpeed);
+void enableNewFallingObjects(FallingObject fallingObjects[], 
+							 int number, 
+							 int widthOfGameWindow, 
+							 int minFallSpeed, 
+							 int maxFallSpeed, 
+							 std::map<std::string, sf::Texture> &texturesForFallingObjects);

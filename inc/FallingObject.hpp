@@ -7,6 +7,7 @@ private:
     int posX;
     int posY;
     bool isFalling;
+    bool isFriendly;
     int speed;
 public:
     sf::Texture texture;
@@ -27,6 +28,10 @@ public:
 
     int getIsFalling();
 
+    void setIsFriendly(bool val);
+
+    bool getIsFriendly();
+    
     FallingObject(const FallingObject &other);
 
     ~FallingObject();

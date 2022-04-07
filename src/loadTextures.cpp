@@ -73,6 +73,10 @@ std::map<std::string, sf::Texture> loadFallingObjectTextures() {
     texture.loadFromFile("./textures/fallingObjects/hink.png");
     textures["hinkalli"] = texture;
 
+    sf::Texture textureBomb;
+    textureBomb.loadFromFile("./textures/fallingObjects/bomb.png");
+    textures["bomb"] = textureBomb;
+
     return textures;  
 };
 
