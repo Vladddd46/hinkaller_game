@@ -19,32 +19,17 @@ int numberOfCaughtItems; // score
 int maxNumberOfFallingObjectsCanSpawn;
 int minNumberOfFallingObjectsCanSpawn;
 int maxPeriodBetweenSpawning;
+int minPeriodBetweenSpawning;
 
 // between 1 and 4 is noraml. 5 is too fast.
 int maxFallingSpeed;
 int minFallingSpeed;
 
+// if 2 => propapility=1/2;3=>1/3;4=>1/4...x=>1/x 
+int probabilityOfUnfriendlyObjectSpawn;
 
-void initGlobalVariables() {
-    screenWidth = sf::VideoMode::getDesktopMode().width;
-    screenHeight = sf::VideoMode::getDesktopMode().height;
+bool gameRun;
 
-    characterInitPositionX = 0;
-    characterInitPositionY = screenHeight-(screenHeight*0.3);
-
-    gameWindowWidth = screenWidth/2;
-    gameWindowHeigh = screenHeight;
-
-    srand(time(NULL));
-
-    numberOfSecondsAfterGameStart = 0;
-    numberOfCaughtItems = 0;
-    maxNumberOfFallingObjectsCanSpawn = 1;
-    minNumberOfFallingObjectsCanSpawn = 1;
-    maxPeriodBetweenSpawning = 3;
-    minFallingSpeed=MIN_FALLING_SPEED;
-    maxFallingSpeed=MAX_FALLING_SPEED;
-}
 
 /*
  * increments global variables which are responsible for difficulty during time.
@@ -85,67 +70,99 @@ void periodicalChangeOfDifficulty() {
         && maxNumberOfFallingObjectsCanSpawn < MAX_NUMBER_OF_FALLING_OBJECTS_CAN_SPAWN_AT_ONCE) {
         minNumberOfFallingObjectsCanSpawn+=1;
     }
-    // TODO: write in log.
-    // std::cout << "Debug: Max Number Of Falling Objects: " << maxNumberOfFallingObjectsCanSpawn << std::endl;
 }
 
-// this function is called every second.
-void everySecondCall() {
+
+// function, which is called every second.
+inline void everySecondCall() {
     numberOfSecondsAfterGameStart += 1;
     periodicalChangeOfDifficulty();
 }
 
-void game_loop(sf::RenderWindow &window, Character &character) {
-    Background background = Background(BACK_GROUND_PATH, 1.85, 1.85);
-    Score score = Score(SCORE_FONT_PATH, 
-                        sf::Color::Black, 
-                        (gameWindowWidth)-(gameWindowWidth/2) - 55, 
-                        0);
+
+void game_loop(sf::RenderWindow &window, 
+               Character &character, 
+               Background &background, 
+               Score &score,
+               std::map<std::string, sf::Texture> &texturesForFallingObjects,
+               FallingObject fallingObjectsArr[]) {
     sf::Clock timeClock;
     timeClock.restart();
-    
-    sf::Clock clockForAnimation;
-    float time;
 
-    std::map<std::string, sf::Texture> texturesForFallingObjects = loadFallingObjectTextures();
-    FallingObject fallingObjects[MAX_FALLING_OBJECTS_IN_ARRAY];
+    sf::Clock clockForAnimation;
+    float timeForAnimation;
 
     while (window.isOpen()) {
-        time = clockForAnimation.getElapsedTime().asMilliseconds();
-        clockForAnimation.restart();
         closeWindowEventCheck(window);
-
-        handleCharacterMovements(character, time);
-        int caughtObjects = checkIfCharacterCaughtObject(character,fallingObjects);
-        if (caughtObjects == -1) {
-            score.setScore(-1);
-            int c;
-            std::cin >> c;
+        if (gameRun == false) {
+            continue;
         }
-        numberOfCaughtItems+= caughtObjects;
+        timeForAnimation = clockForAnimation.getElapsedTime().asMilliseconds();
+        clockForAnimation.restart();
+
+        handleCharacterMovements(character, timeForAnimation);
+        
+        int caughtObjects = checkIfCharacterCaughtObject(character, fallingObjectsArr);
+        if (caughtObjects == -1) {
+            // -1 means, that user caught bomb.
+            // TODO: game over logic.
+            gameRun = false;
+            continue;
+        }
+        numberOfCaughtItems += caughtObjects;
         score.setScore(numberOfCaughtItems);
-        disableObjectsWhichAreOutOfScreen(fallingObjects, gameWindowHeigh);
-        makeObjectsFall(fallingObjects, time);
+        
+        disableObjectsWhichAreOutOfScreen(fallingObjectsArr, gameWindowHeigh);
+        makeObjectsFall(fallingObjectsArr, timeForAnimation);
 
         if (timeClock.getElapsedTime().asSeconds() > 1) {
             everySecondCall();
-            if (numberOfSecondsAfterGameStart%(rand()%maxPeriodBetweenSpawning+1)==0) {
-                enableNewFallingObjects(fallingObjects, 
+            if (numberOfSecondsAfterGameStart%(rand()%maxPeriodBetweenSpawning+minPeriodBetweenSpawning)==0) {
+                enableNewFallingObjects(fallingObjectsArr, 
                                         rand()%maxNumberOfFallingObjectsCanSpawn+minNumberOfFallingObjectsCanSpawn, 
                                         gameWindowWidth,
                                         minFallingSpeed,
-                                        maxFallingSpeed, texturesForFallingObjects);
+                                        maxFallingSpeed,
+                                        probabilityOfUnfriendlyObjectSpawn,
+                                        texturesForFallingObjects);
             }
             timeClock.restart();
         }
+
         // drawing objects
         window.clear();
         window.draw(background.sprite);
         window.draw(character.sprite);
         window.draw(score.text);
-        drawFallingObjects(window, fallingObjects);
+        drawFallingObjects(window, fallingObjectsArr);
         window.display();
     }
+}
+
+
+void initGlobalVariables() {
+    screenWidth = sf::VideoMode::getDesktopMode().width;
+    screenHeight = sf::VideoMode::getDesktopMode().height;
+
+    characterInitPositionX = 0;
+    characterInitPositionY = screenHeight-(screenHeight*0.3);
+
+    gameWindowWidth = screenWidth/2;
+    gameWindowHeigh = screenHeight;
+
+    srand(time(NULL));
+
+    numberOfSecondsAfterGameStart = 0;
+    numberOfCaughtItems = 0;
+    maxNumberOfFallingObjectsCanSpawn = 1;
+    minNumberOfFallingObjectsCanSpawn = 1;
+    maxPeriodBetweenSpawning = 3;
+    minPeriodBetweenSpawning = 1;
+    minFallingSpeed=MIN_FALLING_SPEED;
+    maxFallingSpeed=MAX_FALLING_SPEED;
+
+    probabilityOfUnfriendlyObjectSpawn = 2;
+    gameRun = true;
 }
 
 
@@ -153,10 +170,22 @@ int main() {
     initGlobalVariables();
     sf::RenderWindow window(sf::VideoMode(gameWindowWidth, screenHeight), 
                             GAME_NAME); 
-
     Character character = Character(characterInitPositionX,
                                     characterInitPositionY,
-                                    gameWindowWidth);    
-    game_loop(window, character);
+                                    gameWindowWidth); 
+    Background background = Background(BACK_GROUND_PATH, 1.85, 1.85);   
+    Score score = Score(SCORE_FONT_PATH, 
+                        sf::Color::Black, 
+                        (gameWindowWidth)-(gameWindowWidth/2) - 55, 
+                        0);
+    std::map<std::string, sf::Texture> texturesForFallingObjects = loadFallingObjectTextures();
+    FallingObject fallingObjectsArr[MAX_FALLING_OBJECTS_IN_ARRAY];
+
+    game_loop(window, 
+              character, 
+              background, 
+              score, 
+              texturesForFallingObjects,
+              fallingObjectsArr);
     return 0;
 }

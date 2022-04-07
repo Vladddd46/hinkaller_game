@@ -83,20 +83,23 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
                              int widthOfGameWindow, 
                              int minFallSpeed, 
                              int maxFallSpeed,
+                             int probabilityOfUnfriendlyObjectSpawn,
                              std::map<std::string, sf::Texture> &texturesForFallingObjects) {
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
         if (fallingObjects[i].getIsFalling()==false && number > 0) {
             fallingObjects[i].setIsFalling(true);
-            fallingObjects[i].spawn(rand()%(widthOfGameWindow-15), -10);
+            fallingObjects[i].spawn(rand()%(widthOfGameWindow-25), -10);
             fallingObjects[i].setSpeed(rand()%maxFallSpeed+minFallSpeed);
 
-            if ((rand()%2+1)%2 == 0) {
-                fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);
-                fallingObjects[i].setIsFriendly(true);
-            }
-            else {
+            if (rand()%probabilityOfUnfriendlyObjectSpawn+1 == 1) {
+                // unfriendly objects
                 fallingObjects[i].setTexture(texturesForFallingObjects["bomb"]);
                 fallingObjects[i].setIsFriendly(false);
+            }
+            else {
+                // friendly objects
+                fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);
+                fallingObjects[i].setIsFriendly(true);
             }
             number--;
         }

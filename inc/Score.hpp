@@ -10,5 +10,7 @@ public:
 
     Score(std::string fontPath, sf::Color color, int posX, int posY);
     
+    void setScore(std::string score);
+
     void setScore(int score);
 };

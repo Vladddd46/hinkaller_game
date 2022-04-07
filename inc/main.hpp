@@ -19,5 +19,6 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
 							 int number, 
 							 int widthOfGameWindow, 
 							 int minFallSpeed, 
-							 int maxFallSpeed, 
+							 int maxFallSpeed,
+							 int probabilityOfUnfriendlyObjectSpawn,
 							 std::map<std::string, sf::Texture> &texturesForFallingObjects);

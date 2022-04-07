@@ -20,3 +20,7 @@ void Score::setScore(int score) {
     std::string scoreStr= std::to_string(score);
     text.setString("score: " + scoreStr);
 };
+
+void Score::setScore(std::string score) {
+    text.setString(score);
+};
