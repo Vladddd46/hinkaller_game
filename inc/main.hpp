@@ -8,3 +8,6 @@
 #include "Background.hpp"
 #include "FallingObject.hpp"
 #include "Score.hpp"
+
+void closeWindowEventCheck(sf::RenderWindow &window);
+void handleCharacterMovements(Character &character, float time);

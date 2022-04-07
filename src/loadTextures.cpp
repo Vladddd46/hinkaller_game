@@ -55,6 +55,28 @@ std::map<std::string, std::vector<sf::Texture> > loadCharacterTextures() {
 }
 
 
+/* @data: 06.03.2022
+ * @author: vladddd46
+ * @brief:
+ *        loads textures for falling object
+ * @description:
+ *        textures["hinkalli"]  => texture of hinkalli
+ *        textures["carrot"]    => texture of carrot.
+ * @return:
+ *        type: map<string, Texture> 
+ *        syntax: map<texture_type, texture_objects>
+ */
+std::map<std::string, sf::Texture> loadFallingObjectTextures() {
+    std::map<std::string, sf::Texture> textures;
+    
+    sf::Texture texture;
+    texture.loadFromFile("./textures/fallingObjects/hink.png");
+    textures["hinkalli"] = texture;
+
+    return textures;  
+};
+
+
 
 
 

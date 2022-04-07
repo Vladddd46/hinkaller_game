@@ -9,15 +9,17 @@ FallingObject::FallingObject(std::string texturePath, int posX, int posY) {
     }
     sprite.scale(0.3, 0.3);
     isFalling = false;
+    this->speed=rand()%4 + 3;
 }
 
 void FallingObject::fall(float time) {
-    sprite.move(0,0.5*time);
+    sprite.move(0,(this->speed*0.1)*time);
 }
 
 void FallingObject::setTexture(sf::Texture texture) {
     this->texture = texture;
-    sprite.setTexture(texture);
+    sprite.setTexture(this->texture);
+    sprite.scale(0.3, 0.3);
 }
 
 void FallingObject::setIsFalling(bool val) {
@@ -29,14 +31,15 @@ int FallingObject::getIsFalling() {
 }
 
 void FallingObject::spawn(int gameWindowWidth) {
-    this->sprite.setPosition(rand()%(gameWindowWidth-10), 0);
+    this->sprite.setPosition(rand()%(gameWindowWidth-10), -10);
 }
 
 FallingObject::FallingObject() {
     // std::cout << "Constructor" << std::endl; // debug
     this->posX=0;
     this->posY=0;
-    isFalling = false;
+    this->isFalling = false;
+    this->speed=rand()%4 + 3;
 }
 
 FallingObject::FallingObject(const FallingObject &other) {

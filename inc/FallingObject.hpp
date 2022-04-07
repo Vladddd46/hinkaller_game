@@ -7,6 +7,7 @@ private:
     int posX;
     int posY;
     bool isFalling;
+    int speed;
 public:
     sf::Texture texture;
     sf::Sprite sprite;
