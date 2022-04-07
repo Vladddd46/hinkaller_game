@@ -19,9 +19,11 @@ public:
 
     void setTexture(sf::Texture texture);
 
-    void spawn(int gameWindowWidth);
+    void spawn(int x, int y);
 
     void setIsFalling(bool val);
+
+    void setSpeed(int speed);
 
     int getIsFalling();
 

@@ -1,17 +1,29 @@
 #include "main.hpp"
-#include <vector>
 
+// Height/Width of computer screen
 int screenWidth;
 int screenHeight;
-int characterInitPositionX;
-int characterInitPositionY;
+
+// Height/Width of game screen
 int gameWindowWidth;
 int gameWindowHeigh;
-int numberOfSecondsAfterGameStart;
-int numberOfCaughtItems;
-int maxNumberOfFallingObjectsCanSpawn;
 
-#define MAX_FALLING_OBJECTS 30
+// Position X,Y where character spawns.
+int characterInitPositionX;
+int characterInitPositionY;
+
+int numberOfSecondsAfterGameStart; // game timer
+int numberOfCaughtItems; // score
+
+// Periodical settings.
+int maxNumberOfFallingObjectsCanSpawn;
+int minNumberOfFallingObjectsCanSpawn;
+int maxPeriodBetweenSpawning;
+
+// between 1 and 4 is noraml. 5 is too fast.
+int maxFallingSpeed;
+int minFallingSpeed;
+
 
 void initGlobalVariables() {
     screenWidth = sf::VideoMode::getDesktopMode().width;
@@ -28,72 +40,60 @@ void initGlobalVariables() {
     numberOfSecondsAfterGameStart = 0;
     numberOfCaughtItems = 0;
     maxNumberOfFallingObjectsCanSpawn = 1;
+    minNumberOfFallingObjectsCanSpawn = 1;
+    maxPeriodBetweenSpawning = 3;
+    minFallingSpeed=MIN_FALLING_SPEED;
+    maxFallingSpeed=MAX_FALLING_SPEED;
+}
+
+/*
+ * increments global variables which are responsible for difficulty during time.
+ */
+void periodicalChangeOfDifficulty() {
+    // each 10 seconds increment max falling speed.  
+    if (minFallingSpeed<MIN_FALLING_SPEED+4 && numberOfSecondsAfterGameStart%10==0) {
+        minFallingSpeed+=1;
+    }
+
+    // increment max falling speed each 15 seconds.
+    if (maxFallingSpeed<MAX_FALLING_SPEED+3 && numberOfSecondsAfterGameStart%15==0) {
+        maxFallingSpeed+=1;
+    }
+
+
+    // each 10 seconds max period between spawning new falling object decrements by 1. 
+    if (maxPeriodBetweenSpawning > 1 && numberOfSecondsAfterGameStart%10==0) {
+        maxPeriodBetweenSpawning-=1;
+    }
+
+    // incrementing number of objects can spawn once
+    if (maxNumberOfFallingObjectsCanSpawn < MAX_NUMBER_OF_FALLING_OBJECTS_CAN_SPAWN_AT_ONCE) {
+        if (maxNumberOfFallingObjectsCanSpawn<5) {
+            if (numberOfSecondsAfterGameStart%INCREMENT_PERIOD_OF_MAX_NUM_OF_FALLING_OBJECTS_IN_SEC==0) {
+                maxNumberOfFallingObjectsCanSpawn += 1;
+            }
+        }
+        else {
+            // 5 seconds longer incremental of maxNumberOfFallingObjectsCanSpawn.
+            if (numberOfSecondsAfterGameStart%(INCREMENT_PERIOD_OF_MAX_NUM_OF_FALLING_OBJECTS_IN_SEC+5)==0) {
+                maxNumberOfFallingObjectsCanSpawn += 1;
+            }
+        }
+    }
+    // incrementing min number of objects can spawn each 20 seconds.
+    if  (numberOfSecondsAfterGameStart%20==0 
+        && maxNumberOfFallingObjectsCanSpawn < MAX_NUMBER_OF_FALLING_OBJECTS_CAN_SPAWN_AT_ONCE) {
+        minNumberOfFallingObjectsCanSpawn+=1;
+    }
+    // TODO: write in log.
+    // std::cout << "Debug: Max Number Of Falling Objects: " << maxNumberOfFallingObjectsCanSpawn << std::endl;
 }
 
 // this function is called every second.
 void everySecondCall() {
     numberOfSecondsAfterGameStart += 1;
-    if (maxNumberOfFallingObjectsCanSpawn < 5 
-        && numberOfSecondsAfterGameStart%10==0) {
-        maxNumberOfFallingObjectsCanSpawn += 1;
-    }
-    std::cout << "Debug: Max Number Of Falling Objects: " << maxNumberOfFallingObjectsCanSpawn << std::endl;
+    periodicalChangeOfDifficulty();
 }
-
-
-/* @brief: makes fall all objects, which have attribute isFalling==true
- * @param:
- *        fallingObjects - list of objects, which can fall.
- *        time - ...
- */
-void objectsFall(FallingObject fallingObjects[], float time) {
-    for (int i=0;i<MAX_FALLING_OBJECTS; i++) {
-        if (fallingObjects[i].getIsFalling()==true) {
-            fallingObjects[i].fall(time);
-        }
-    }
-}
-
-
-void drawFallingObjects(sf::RenderWindow &window, FallingObject fallingObjects[]) {
-    for (int i=0;i<MAX_FALLING_OBJECTS;i++) {
-        if (fallingObjects[i].getIsFalling()==true) {
-            window.draw(fallingObjects[i].sprite);
-        }
-    }
-}
-
-void checkIfCharacterCaughtObject(Character &character, FallingObject fallingObjects[]) {
-    for (int i=0;i<MAX_FALLING_OBJECTS;i++) {
-        if(character.sprite.getGlobalBounds().intersects(fallingObjects[i].sprite.getGlobalBounds()) 
-            && fallingObjects[i].getIsFalling()==true) {
-            numberOfCaughtItems += 1;
-            fallingObjects[i].setIsFalling(false);                
-            // score.setScore(numberOfCaughtItems);
-        }
-    }
-}
-
-void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[]) {
-    // out of screen
-    for (int i=0;i<MAX_FALLING_OBJECTS;i++) {
-        if (fallingObjects[i].sprite.getPosition().y > gameWindowHeigh+100) {
-            fallingObjects[i].setIsFalling(false);
-        }
-    }
-}
-
-
-void enableNewFallingObjects(FallingObject fallingObjects[], int number) {
-    for (int i=0;i<MAX_FALLING_OBJECTS;i++) {
-        if (fallingObjects[i].getIsFalling()==false && number > 0) {
-            fallingObjects[i].setIsFalling(true);
-            fallingObjects[i].spawn(gameWindowWidth);
-            number--;   
-        }
-    }
-}
-
 
 void game_loop(sf::RenderWindow &window, Character &character) {
     Background background = Background(BACK_GROUND_PATH, 1.85, 1.85);
@@ -107,11 +107,11 @@ void game_loop(sf::RenderWindow &window, Character &character) {
     sf::Clock clockForAnimation;
     float time;
 
-    
     std::map<std::string, sf::Texture> texturesForFallingObjects = loadFallingObjectTextures();
+    FallingObject fallingObjects[MAX_FALLING_OBJECTS_IN_ARRAY];
 
-    FallingObject fallingObjects[MAX_FALLING_OBJECTS];
-    for (int i =0;i<MAX_FALLING_OBJECTS;i++) {
+    // TODO: replace setting texutere in enableNewFallingObjects func.
+    for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
         fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);
     }
 
@@ -121,17 +121,22 @@ void game_loop(sf::RenderWindow &window, Character &character) {
         closeWindowEventCheck(window);
 
         handleCharacterMovements(character, time);
-        checkIfCharacterCaughtObject(character,fallingObjects);
+        numberOfCaughtItems += checkIfCharacterCaughtObject(character,fallingObjects);
         score.setScore(numberOfCaughtItems);
-        disableObjectsWhichAreOutOfScreen(fallingObjects);
-        objectsFall(fallingObjects, time);
+        disableObjectsWhichAreOutOfScreen(fallingObjects, gameWindowHeigh);
+        makeObjectsFall(fallingObjects, time);
 
         if (timeClock.getElapsedTime().asSeconds() > 1) {
             everySecondCall();
-            enableNewFallingObjects(fallingObjects, rand()%maxNumberOfFallingObjectsCanSpawn+1);
+            if (numberOfSecondsAfterGameStart%(rand()%maxPeriodBetweenSpawning+1)==0) {
+                enableNewFallingObjects(fallingObjects, 
+                                        rand()%maxNumberOfFallingObjectsCanSpawn+minNumberOfFallingObjectsCanSpawn, 
+                                        gameWindowWidth,
+                                        minFallingSpeed,
+                                        maxFallingSpeed);
+            }
             timeClock.restart();
         }
-
         // drawing objects
         window.clear();
         window.draw(background.sprite);

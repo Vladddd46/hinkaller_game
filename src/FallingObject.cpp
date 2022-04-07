@@ -30,8 +30,12 @@ int FallingObject::getIsFalling() {
     return this->isFalling;
 }
 
-void FallingObject::spawn(int gameWindowWidth) {
-    this->sprite.setPosition(rand()%(gameWindowWidth-10), -10);
+void FallingObject::spawn(int x, int y) {
+    this->sprite.setPosition(x, y);
+}
+
+void FallingObject::setSpeed(int speed) {
+    this->speed = speed;
 }
 
 FallingObject::FallingObject() {
