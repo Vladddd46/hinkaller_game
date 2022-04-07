@@ -35,6 +35,12 @@ bool gameRun;
  * increments global variables which are responsible for difficulty during time.
  */
 void periodicalChangeOfDifficulty() {
+    // each 10 seconds probabilityOfUnfriendlyObjectSpawn decrements
+    if (probabilityOfUnfriendlyObjectSpawn>1 && numberOfSecondsAfterGameStart%10==0) {
+        probabilityOfUnfriendlyObjectSpawn-=1;
+    }
+    std::cout << probabilityOfUnfriendlyObjectSpawn << std::endl;
+
     // each 10 seconds increment max falling speed.  
     if (minFallingSpeed<MIN_FALLING_SPEED+4 && numberOfSecondsAfterGameStart%10==0) {
         minFallingSpeed+=1;
@@ -161,7 +167,7 @@ void initGlobalVariables() {
     minFallingSpeed=MIN_FALLING_SPEED;
     maxFallingSpeed=MAX_FALLING_SPEED;
 
-    probabilityOfUnfriendlyObjectSpawn = 2;
+    probabilityOfUnfriendlyObjectSpawn = 10;
     gameRun = true;
 }
 
