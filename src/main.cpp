@@ -31,12 +31,48 @@ int probabilityOfUnfriendlyObjectSpawn;
 bool gameRun;
 
 
+inline void initGlobalVariables() {
+    screenWidth = sf::VideoMode::getDesktopMode().width;
+    screenHeight = sf::VideoMode::getDesktopMode().height;
+
+    characterInitPositionX = 0;
+    characterInitPositionY = screenHeight-(screenHeight*0.3);
+
+    gameWindowWidth = screenWidth/2;
+    gameWindowHeigh = screenHeight;
+
+    srand(time(NULL));
+
+    numberOfSecondsAfterGameStart = 0;
+    numberOfCaughtItems = 0;
+    maxNumberOfFallingObjectsCanSpawn = 1;
+    minNumberOfFallingObjectsCanSpawn = 1;
+    maxPeriodBetweenSpawning = 3;
+    minPeriodBetweenSpawning = 1;
+    minFallingSpeed=MIN_FALLING_SPEED;
+    maxFallingSpeed=MAX_FALLING_SPEED;
+
+    probabilityOfUnfriendlyObjectSpawn = PERCENT_OF_UNFRIENDLY_OBJECTS;
+    gameRun = true;
+}
+
+
+inline void restartGame(Score &score, FallingObject fallingObjectsArr[]) {
+    score.setScore(0);
+    initGlobalVariables();
+
+    // disable all falling objects.
+    for (int i=0; i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
+        fallingObjectsArr[i].setIsFalling(false);
+    }
+}
+
 /* @brief: periodically increments variables, which
  *         are responsible for game difficulty.
  */
 void periodicalChangeOfDifficulty() {
     // each X seconds probabilityOfUnfriendlyObjectSpawn decrements
-    if (probabilityOfUnfriendlyObjectSpawn>1 
+    if (probabilityOfUnfriendlyObjectSpawn>2 
         && numberOfSecondsAfterGameStart%PERIOD_DECREMENT_PROBABILITY_OF_SPAWN_UNFRIEND_OBJECTS==0) {
         probabilityOfUnfriendlyObjectSpawn-=1;
     }
@@ -92,8 +128,7 @@ void game_loop(sf::RenderWindow &window,
                Score &score,
                std::map<std::string, sf::Texture> &texturesForFallingObjects,
                FallingObject fallingObjectsArr[],
-               Text &gameoverText,
-               sf::Music &mainMusic) {
+               Text &gameoverText) {
     sf::Clock timeClock;
     timeClock.restart();
 
@@ -109,16 +144,16 @@ void game_loop(sf::RenderWindow &window,
     sf::Sound caughtBombSound(bufferForGameOverSound);
 
     while(window.isOpen()) {
-
-        // check if background music ended. If yes -> repeat.
-        if(mainMusic.getStatus() != sf::Music::Status::Playing) {
-            mainMusic.play();
-        }
-
         timeForAnimation = clockForAnimation.getElapsedTime().asMilliseconds();
         clockForAnimation.restart();
         closeWindowEventCheck(window);
         if (gameRun == false) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::MouseButtonPressed) {
+                    restartGame(score, fallingObjectsArr);
+                }
+            }
             continue;
         }
         handleCharacterMovements(character, timeForAnimation);
@@ -126,7 +161,6 @@ void game_loop(sf::RenderWindow &window,
                                                          fallingObjectsArr);
         if (caughtObjects == -1) {
             // -1 means, that user caught bomb.
-            // TODO: game over logic.
             caughtBombSound.play();
             gameRun = false;
             goto draw;
@@ -167,32 +201,6 @@ void game_loop(sf::RenderWindow &window,
 }
 
 
-void initGlobalVariables() {
-    screenWidth = sf::VideoMode::getDesktopMode().width;
-    screenHeight = sf::VideoMode::getDesktopMode().height;
-
-    characterInitPositionX = 0;
-    characterInitPositionY = screenHeight-(screenHeight*0.3);
-
-    gameWindowWidth = screenWidth/2;
-    gameWindowHeigh = screenHeight;
-
-    srand(time(NULL));
-
-    numberOfSecondsAfterGameStart = 0;
-    numberOfCaughtItems = 0;
-    maxNumberOfFallingObjectsCanSpawn = 1;
-    minNumberOfFallingObjectsCanSpawn = 1;
-    maxPeriodBetweenSpawning = 3;
-    minPeriodBetweenSpawning = 1;
-    minFallingSpeed=MIN_FALLING_SPEED;
-    maxFallingSpeed=MAX_FALLING_SPEED;
-
-    probabilityOfUnfriendlyObjectSpawn = PERCENT_OF_UNFRIENDLY_OBJECTS;
-    gameRun = true;
-}
-
-
 int main() {
     initGlobalVariables();
     sf::RenderWindow window(sf::VideoMode(gameWindowWidth, screenHeight), 
@@ -218,6 +226,7 @@ int main() {
     sf::Music mainMusic;
     mainMusic.openFromFile(BACKGROUND_MUSIC);
     mainMusic.setVolume(50.f);
+    mainMusic.setLoop(true);
     mainMusic.play();
 
     game_loop(window, 
@@ -226,7 +235,6 @@ int main() {
               score, 
               texturesForFallingObjects,
               fallingObjectsArr,
-              gameoverText,
-              mainMusic);
+              gameoverText);
     return 0;
 }
