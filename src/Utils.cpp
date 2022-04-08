@@ -61,7 +61,8 @@ void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHi
 
 // Checks whether user object and falling object intersects.
 // returns number of intersections.
-int checkIfCharacterCaughtObject(Character &character, FallingObject fallingObjects[]) {
+int checkIfCharacterCaughtObject(Character &character, 
+                                 FallingObject fallingObjects[]) {
     int numberOfCaughtObjects = 0;
 
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
@@ -71,7 +72,7 @@ int checkIfCharacterCaughtObject(Character &character, FallingObject fallingObje
             fallingObjects[i].setIsFalling(false);
             if (fallingObjects[i].getIsFriendly() == false) {
                 return -1;
-            };                
+            };
         }
     }
     return numberOfCaughtObjects;

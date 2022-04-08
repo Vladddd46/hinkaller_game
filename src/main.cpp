@@ -31,48 +31,48 @@ int probabilityOfUnfriendlyObjectSpawn;
 bool gameRun;
 
 
-/*
- * increments global variables which are responsible for difficulty during time.
+/* @brief: periodically increments variables, which
+ *         are responsible for game difficulty.
  */
 void periodicalChangeOfDifficulty() {
-    // each 10 seconds probabilityOfUnfriendlyObjectSpawn decrements
-    if (probabilityOfUnfriendlyObjectSpawn>1 && numberOfSecondsAfterGameStart%10==0) {
+    // each X seconds probabilityOfUnfriendlyObjectSpawn decrements
+    if (probabilityOfUnfriendlyObjectSpawn>1 
+        && numberOfSecondsAfterGameStart%PERIOD_DECREMENT_PROBABILITY_OF_SPAWN_UNFRIEND_OBJECTS==0) {
         probabilityOfUnfriendlyObjectSpawn-=1;
     }
-    std::cout << probabilityOfUnfriendlyObjectSpawn << std::endl;
 
-    // each 10 seconds increment max falling speed.  
-    if (minFallingSpeed<MIN_FALLING_SPEED+4 && numberOfSecondsAfterGameStart%10==0) {
+    // each 10 seconds increment min falling speed.  
+    if (minFallingSpeed<MIN_FALLING_SPEED+4 && numberOfSecondsAfterGameStart%PERIOD_INCREMENT_MIN_FALLING_SPEED==0) {
         minFallingSpeed+=1;
     }
 
     // increment max falling speed each 15 seconds.
-    if (maxFallingSpeed<MAX_FALLING_SPEED+3 && numberOfSecondsAfterGameStart%15==0) {
+    if (maxFallingSpeed<MAX_FALLING_SPEED+3 && (numberOfSecondsAfterGameStart%(PERIOD_INCREMENT_MIN_FALLING_SPEED+5))==0) {
         maxFallingSpeed+=1;
     }
 
-
     // each 10 seconds max period between spawning new falling object decrements by 1. 
-    if (maxPeriodBetweenSpawning > 1 && numberOfSecondsAfterGameStart%10==0) {
+    if (maxPeriodBetweenSpawning > 1 && numberOfSecondsAfterGameStart%PERIOD_DECREMENT_MAX_SEC_BETWEEN_SPAWNING_OBJECTS==0) {
         maxPeriodBetweenSpawning-=1;
     }
 
     // incrementing number of objects can spawn once
     if (maxNumberOfFallingObjectsCanSpawn < MAX_NUMBER_OF_FALLING_OBJECTS_CAN_SPAWN_AT_ONCE) {
         if (maxNumberOfFallingObjectsCanSpawn<5) {
-            if (numberOfSecondsAfterGameStart%INCREMENT_PERIOD_OF_MAX_NUM_OF_FALLING_OBJECTS_IN_SEC==0) {
+            if (numberOfSecondsAfterGameStart%PERIOD_INCREMENT_MAX_NUM_OF_FALLING_OBJECTS==0) {
                 maxNumberOfFallingObjectsCanSpawn += 1;
             }
         }
         else {
             // 5 seconds longer incremental of maxNumberOfFallingObjectsCanSpawn.
-            if (numberOfSecondsAfterGameStart%(INCREMENT_PERIOD_OF_MAX_NUM_OF_FALLING_OBJECTS_IN_SEC+5)==0) {
+            if (numberOfSecondsAfterGameStart%(PERIOD_INCREMENT_MAX_NUM_OF_FALLING_OBJECTS+5)==0) {
                 maxNumberOfFallingObjectsCanSpawn += 1;
             }
         }
     }
-    // incrementing min number of objects can spawn each 20 seconds.
-    if  (numberOfSecondsAfterGameStart%20==0 
+
+    // incrementing min number of objects can spawn each 25 seconds.
+    if (numberOfSecondsAfterGameStart%PREDIOD_INCREMENT_NUM_OF_MIN_OBJECTS_CAN_SPAWN_SEC==0 
         && maxNumberOfFallingObjectsCanSpawn < MAX_NUMBER_OF_FALLING_OBJECTS_CAN_SPAWN_AT_ONCE) {
         minNumberOfFallingObjectsCanSpawn+=1;
     }
@@ -91,29 +91,48 @@ void game_loop(sf::RenderWindow &window,
                Background &background, 
                Score &score,
                std::map<std::string, sf::Texture> &texturesForFallingObjects,
-               FallingObject fallingObjectsArr[]) {
+               FallingObject fallingObjectsArr[],
+               Text &gameoverText,
+               sf::Music &mainMusic) {
     sf::Clock timeClock;
     timeClock.restart();
 
     sf::Clock clockForAnimation;
     float timeForAnimation;
 
-    while (window.isOpen()) {
+    sf::SoundBuffer bufferForCaughtObjectSound;
+    bufferForCaughtObjectSound.loadFromFile(CAUGHT_FRIENDLY_OBJECT_SOUND);
+    sf::Sound caughtObjectSound(bufferForCaughtObjectSound);
+
+    sf::SoundBuffer bufferForGameOverSound;
+    bufferForGameOverSound.loadFromFile(GAME_OVER_SOUND);
+    sf::Sound caughtBombSound(bufferForGameOverSound);
+
+    while(window.isOpen()) {
+
+        // check if background music ended. If yes -> repeat.
+        if(mainMusic.getStatus() != sf::Music::Status::Playing) {
+            mainMusic.play();
+        }
+
+        timeForAnimation = clockForAnimation.getElapsedTime().asMilliseconds();
+        clockForAnimation.restart();
         closeWindowEventCheck(window);
         if (gameRun == false) {
             continue;
         }
-        timeForAnimation = clockForAnimation.getElapsedTime().asMilliseconds();
-        clockForAnimation.restart();
-
         handleCharacterMovements(character, timeForAnimation);
-        
-        int caughtObjects = checkIfCharacterCaughtObject(character, fallingObjectsArr);
+        int caughtObjects = checkIfCharacterCaughtObject(character, 
+                                                         fallingObjectsArr);
         if (caughtObjects == -1) {
             // -1 means, that user caught bomb.
             // TODO: game over logic.
+            caughtBombSound.play();
             gameRun = false;
-            continue;
+            goto draw;
+        }
+        else if (caughtObjects > 0) {
+            caughtObjectSound.play();
         }
         numberOfCaughtItems += caughtObjects;
         score.setScore(numberOfCaughtItems);
@@ -136,11 +155,13 @@ void game_loop(sf::RenderWindow &window,
         }
 
         // drawing objects
+        draw:
         window.clear();
         window.draw(background.sprite);
         window.draw(character.sprite);
         window.draw(score.text);
         drawFallingObjects(window, fallingObjectsArr);
+        if (gameRun == false) window.draw(gameoverText.text);
         window.display();
     }
 }
@@ -167,7 +188,7 @@ void initGlobalVariables() {
     minFallingSpeed=MIN_FALLING_SPEED;
     maxFallingSpeed=MAX_FALLING_SPEED;
 
-    probabilityOfUnfriendlyObjectSpawn = 10;
+    probabilityOfUnfriendlyObjectSpawn = PERCENT_OF_UNFRIENDLY_OBJECTS;
     gameRun = true;
 }
 
@@ -184,14 +205,28 @@ int main() {
                         sf::Color::Black, 
                         (gameWindowWidth)-(gameWindowWidth/2) - 55, 
                         0);
+    Text gameoverText = Text("Game Over", 
+                             SCORE_FONT_PATH, 
+                             sf::Color::Black,
+                             (gameWindowWidth)-(gameWindowWidth/2) - 90, 
+                             gameWindowHeigh/3);
+
     std::map<std::string, sf::Texture> texturesForFallingObjects = loadFallingObjectTextures();
     FallingObject fallingObjectsArr[MAX_FALLING_OBJECTS_IN_ARRAY];
+
+    // background music
+    sf::Music mainMusic;
+    mainMusic.openFromFile(BACKGROUND_MUSIC);
+    mainMusic.setVolume(50.f);
+    mainMusic.play();
 
     game_loop(window, 
               character, 
               background, 
               score, 
               texturesForFallingObjects,
-              fallingObjectsArr);
+              fallingObjectsArr,
+              gameoverText,
+              mainMusic);
     return 0;
 }

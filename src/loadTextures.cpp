@@ -39,6 +39,14 @@ std::map<std::string, std::vector<sf::Texture> > loadCharacterTextures() {
     }
     textures["runBack"]=runBackTextures;
 
+    std::vector<sf::Texture> dieTextures;
+    for(int i=0;i<9;i++) {
+        sf::Texture die;
+        die.loadFromFile("./textures/character/Dead__00"+std::to_string(i)+".png");
+        dieTextures.push_back(die);
+    }
+    textures["die"]=dieTextures;
+
     std::vector<sf::Texture> idleTextures;
     sf::Texture idle;
     idle.loadFromFile("./textures/character/Idle__000.png");

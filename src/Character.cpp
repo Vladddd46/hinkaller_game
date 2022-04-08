@@ -9,6 +9,7 @@ Character::Character(int posX, int posY, float rightBoarder) {
     sprite.setPosition(posX, posY);
     sprite.scale(CHARACTER_IMAGE_SCALE, CHARACTER_IMAGE_SCALE);
     this->rightBoarder = rightBoarder;
+    this->isDead=false;
 }
 
 void Character::move_right(float time) {
@@ -31,6 +32,19 @@ void Character::move_left(float time) {
     if (currentFrame >= 9) currentFrame -= 9;
     sprite.setTexture(textures["runBack"][int(currentFrame)]);
     turnsLeft = true;   
+}
+
+void Character::die(float time) {
+    if (this->isDead==true) {
+        sprite.setTexture(textures["die"][9]);
+        return;
+    }
+    currentFrame += 0.04*time;
+    if (currentFrame >= 9) {
+        currentFrame -= 9;
+        this->isDead=true;
+    };
+    sprite.setTexture(textures["die"][int(currentFrame)]);
 }
 
 void Character::stay() {

@@ -9,11 +9,13 @@ private:
     float currentFrame;
     bool turnsLeft;
     float rightBoarder;
+    float isDead;
 public:
     sf::Sprite sprite;
     std::map<std::string, std::vector<sf::Texture> > textures;
     Character(int posX, int posY, float rightBoarder);
     void move_right(float time);
     void move_left(float time);
+    void die(float time);
     void stay();
 };

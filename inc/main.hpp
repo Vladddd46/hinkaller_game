@@ -8,13 +8,16 @@
 #include "Background.hpp"
 #include "FallingObject.hpp"
 #include "Score.hpp"
+#include "Text.hpp"
+#include <SFML/Audio.hpp>
 
 void closeWindowEventCheck(sf::RenderWindow &window);
 void handleCharacterMovements(Character &character, float time);
 void makeObjectsFall(FallingObject fallingObjects[], float time);
 void drawFallingObjects(sf::RenderWindow &window, FallingObject fallingObjects[]);
 void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHighOfGameWindow);
-int checkIfCharacterCaughtObject(Character &character, FallingObject fallingObjects[]);
+int checkIfCharacterCaughtObject(Character &character, 
+								 FallingObject fallingObjects[]);
 void enableNewFallingObjects(FallingObject fallingObjects[], 
 							 int number, 
 							 int widthOfGameWindow, 
