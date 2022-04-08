@@ -143,13 +143,17 @@ void game_loop(sf::RenderWindow &window,
     bufferForGameOverSound.loadFromFile(GAME_OVER_SOUND);
     sf::Sound caughtBombSound(bufferForGameOverSound);
 
+    int caughtObjects = 0;
     while(window.isOpen()) {
         timeForAnimation = clockForAnimation.getElapsedTime().asMilliseconds();
         clockForAnimation.restart();
         closeWindowEventCheck(window);
+
         if (gameRun == false) {
+            // checking if user has pressed the mouse btn.
             sf::Event event;
             while (window.pollEvent(event)) {
+                // if user pressed btn -> restart game.
                 if (event.type == sf::Event::MouseButtonPressed) {
                     restartGame(score, fallingObjectsArr);
                 }
@@ -157,8 +161,8 @@ void game_loop(sf::RenderWindow &window,
             continue;
         }
         handleCharacterMovements(character, timeForAnimation);
-        int caughtObjects = checkIfCharacterCaughtObject(character, 
-                                                         fallingObjectsArr);
+        caughtObjects = checkIfCharacterCaughtObject(character, 
+                                                     fallingObjectsArr);
         if (caughtObjects == -1) {
             // -1 means, that user caught bomb.
             caughtBombSound.play();
@@ -192,10 +196,10 @@ void game_loop(sf::RenderWindow &window,
         draw:
         window.clear();
         window.draw(background.sprite);
-        window.draw(character.sprite);
         window.draw(score.text);
         drawFallingObjects(window, fallingObjectsArr);
         if (gameRun == false) window.draw(gameoverText.text);
+        window.draw(character.sprite);
         window.display();
     }
 }

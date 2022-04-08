@@ -35,17 +35,26 @@ void Character::move_left(float time) {
 }
 
 void Character::die(float time) {
-    if (this->isDead==true) {
-        sprite.setTexture(textures["die"][9]);
-        return;
-    }
-    currentFrame += 0.04*time;
-    if (currentFrame >= 9) {
-        currentFrame -= 9;
-        this->isDead=true;
-    };
-    sprite.setTexture(textures["die"][int(currentFrame)]);
+    // TODO: needed to write logic for die.
+    // if (this->isDead==true) {
+    //     sprite.setTexture(textures["die"][7]);
+    // }
+    // currentFrame += 0.04*time;
+    // if (currentFrame >= 9) {
+    //     currentFrame -= 9;
+    //     this->isDead=true;
+    // };
+    // sprite.setTexture(textures["die"][int(5)]);
 }
+
+void Character::setIsDead(bool val) {
+    this->isDead = val;
+}
+
+bool Character::getIsDead() {
+    return this->isDead;
+}
+
 
 void Character::stay() {
     if (!turnsLeft)

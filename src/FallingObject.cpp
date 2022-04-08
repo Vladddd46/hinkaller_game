@@ -7,9 +7,9 @@ FallingObject::FallingObject(std::string texturePath, int posX, int posY) {
     if (texturePath!="") {
         sprite.setTexture(texture);
     }
-    sprite.scale(0.3, 0.3);
+    sprite.scale(0.3, 0.3); // TODO: move scaling in constructor args.
     isFalling = false;
-    this->speed=rand()%4 + 3;
+    this->speed=rand()%4 + 3; // TODO: move speed in constructor agrs.
     this->isFriendly = true;
 }
 
@@ -20,7 +20,6 @@ void FallingObject::fall(float time) {
 void FallingObject::setTexture(sf::Texture texture) {
     this->texture = texture;
     sprite.setTexture(this->texture);
-    // sprite.scale(0.3, 0.3);
 }
 
 void FallingObject::setIsFalling(bool val) {
@@ -58,10 +57,12 @@ FallingObject::FallingObject() {
 }
 
 FallingObject::FallingObject(const FallingObject &other) {
-    std::cout<<"Copy constructor"<<std::endl;
+    // TODO: add debugger
+    // std::cout<<"Copy constructor"<<std::endl;
 }
 
 FallingObject::~FallingObject() {
-    std::cout << "Destructor: " << this << std::endl;
+    // TODO: add debugger
+    // std::cout << "Destructor: " << this << std::endl;
 }
 

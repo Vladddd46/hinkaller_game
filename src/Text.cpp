@@ -6,7 +6,7 @@ Text::Text(std::string msg,
            int posX, 
            int posY) {
     if (!MyFont.loadFromFile(fontPath)) {
-        // debug msg.
+        // TODO: debug msg should be written in log.
         exit(1);
     }
     text.setString(msg);

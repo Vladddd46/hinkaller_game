@@ -9,7 +9,7 @@ private:
     float currentFrame;
     bool turnsLeft;
     float rightBoarder;
-    float isDead;
+    bool isDead;
 public:
     sf::Sprite sprite;
     std::map<std::string, std::vector<sf::Texture> > textures;
@@ -17,5 +17,7 @@ public:
     void move_right(float time);
     void move_left(float time);
     void die(float time);
+    void setIsDead(bool val);
+    bool getIsDead();
     void stay();
 };
