@@ -99,7 +99,14 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
             }
             else {
                 // friendly objects
-                fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);
+
+                // propability of chacha fall.
+                if ((rand()%100)%2 == 0) {
+                    fallingObjects[i].setTexture(texturesForFallingObjects["chacha"]);
+                }
+                else {
+                    fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);
+                }
                 fallingObjects[i].setIsFriendly(true);
             }
             number--;

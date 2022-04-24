@@ -78,12 +78,22 @@ std::map<std::string, sf::Texture> loadFallingObjectTextures() {
     std::map<std::string, sf::Texture> textures;
     
     sf::Texture texture;
-    texture.loadFromFile("./textures/fallingObjects/hink.png");
+    if (!texture.loadFromFile("./textures/fallingObjects/hink.png")) {
+        std::cout << "Can not load hink.png" << std::endl;
+    };
     textures["hinkalli"] = texture;
 
     sf::Texture textureBomb;
-    textureBomb.loadFromFile("./textures/fallingObjects/bomb.png");
+    if (!textureBomb.loadFromFile("./textures/fallingObjects/bomb.png")) {
+        std::cout << "Can not load bomb.png" << std::endl;
+    };
     textures["bomb"] = textureBomb;
+
+    sf::Texture textureChacha;
+    if (!textureChacha.loadFromFile("./textures/fallingObjects/chacha.png")) {
+        std::cout << "Can not load chacha.png" << std::endl;
+    };
+    textures["chacha"] = textureChacha;
 
     return textures;  
 };

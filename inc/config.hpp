@@ -29,3 +29,8 @@
 #define PERIOD_INCREMENT_MIN_FALLING_SPEED 20
 // each num of seconds when increments max num of falling objects.
 #define PERIOD_INCREMENT_MAX_NUM_OF_FALLING_OBJECTS 20
+
+
+// porbability of spawning chacha falling object. In percentage. 
+// 50-50% of sawning friendly objects will be chacha
+// #define PROBABILITY_OF_CHACHA_SPAWN_IN_PERCENT 50
