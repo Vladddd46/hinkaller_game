@@ -87,7 +87,11 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
                              int probabilityOfUnfriendlyObjectSpawn,
                              std::map<std::string, sf::Texture> &texturesForFallingObjects) {
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
+        
         if (fallingObjects[i].getIsFalling()==false && number > 0) {
+            FallingObject newFallingObject = FallingObject();
+            fallingObjects[i] = newFallingObject;
+
             fallingObjects[i].setIsFalling(true);
             fallingObjects[i].spawn(rand()%(widthOfGameWindow-25), -10);
             fallingObjects[i].setSpeed(rand()%maxFallSpeed+minFallSpeed);
@@ -101,7 +105,7 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
                 // friendly objects
 
                 // propability of chacha fall.
-                if ((rand()%100)%2 == 0) {
+                if ((rand()%100)<PROBABILITY_OF_CHACHA_SPAWN_IN_PERCENT) {
                     fallingObjects[i].setTexture(texturesForFallingObjects["chacha"]);
                 }
                 else {
