@@ -95,6 +95,13 @@ std::map<std::string, sf::Texture> loadFallingObjectTextures() {
     };
     textures["chacha"] = textureChacha;
 
+
+    sf::Texture textureSheep;
+    if (!textureSheep.loadFromFile("./textures/fallingObjects/sheep.png")) {
+        std::cout << "Can not load chacha.png" << std::endl;
+    };
+    textures["sheep"] = textureSheep;
+
     return textures;  
 };
 
