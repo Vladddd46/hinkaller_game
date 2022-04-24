@@ -33,4 +33,4 @@
 
 // porbability of spawning chacha falling object. In percentage. 
 // 50-50% of sawning friendly objects will be chacha
-#define PROBABILITY_OF_CHACHA_SPAWN_IN_PERCENT 50
+#define PROBABILITY_OF_CHACHA_SPAWN_IN_PERCENT 15

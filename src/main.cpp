@@ -28,6 +28,9 @@ int minFallingSpeed;
 // if 2 => propapility=1/2;3=>1/3;4=>1/4...x=>1/x 
 int probabilityOfUnfriendlyObjectSpawn;
 
+// counter, that means number of seconds sheeps will fall.
+int sheepsFalling;
+
 bool gameRun;
 
 
@@ -54,6 +57,8 @@ inline void initGlobalVariables() {
 
     probabilityOfUnfriendlyObjectSpawn = PERCENT_OF_UNFRIENDLY_OBJECTS;
     gameRun = true;
+
+    sheepsFalling = 0;
 }
 
 
@@ -119,6 +124,10 @@ void periodicalChangeOfDifficulty() {
 inline void everySecondCall() {
     numberOfSecondsAfterGameStart += 1;
     periodicalChangeOfDifficulty();
+
+    if (sheepsFalling > 0) {
+        sheepsFalling -= 1;
+    }
 }
 
 
@@ -161,8 +170,15 @@ void game_loop(sf::RenderWindow &window,
             continue;
         }
         handleCharacterMovements(character, timeForAnimation);
+
+        bool chachaCought = false;
         caughtObjects = checkIfCharacterCaughtObject(character, 
-                                                     fallingObjectsArr);
+                                                     fallingObjectsArr,
+                                                     chachaCought);
+        if (chachaCought) {
+            sheepsFalling = 10;
+        }
+
         if (caughtObjects == -1) {
             // -1 means, that user caught bomb.
             caughtBombSound.play();
@@ -174,7 +190,7 @@ void game_loop(sf::RenderWindow &window,
         }
         numberOfCaughtItems += caughtObjects;
         score.setScore(numberOfCaughtItems);
-        
+                
         disableObjectsWhichAreOutOfScreen(fallingObjectsArr, gameWindowHeigh);
         makeObjectsFall(fallingObjectsArr, timeForAnimation);
 
@@ -187,7 +203,8 @@ void game_loop(sf::RenderWindow &window,
                                         minFallingSpeed,
                                         maxFallingSpeed,
                                         probabilityOfUnfriendlyObjectSpawn,
-                                        texturesForFallingObjects);
+                                        texturesForFallingObjects,
+                                        sheepsFalling);
             }
             timeClock.restart();
         }

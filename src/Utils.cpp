@@ -62,13 +62,15 @@ void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHi
 // Checks whether user object and falling object intersects.
 // returns number of intersections.
 int checkIfCharacterCaughtObject(Character &character, 
-                                 FallingObject fallingObjects[]) {
+                                 FallingObject fallingObjects[],
+                                 bool &chachaCought) {
     int numberOfCaughtObjects = 0;
 
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
         if(character.sprite.getGlobalBounds().intersects(fallingObjects[i].sprite.getGlobalBounds()) 
            && fallingObjects[i].getIsFalling()==true) {
             numberOfCaughtObjects += 1;
+            chachaCought = fallingObjects[i].getIsMagicObject();
             fallingObjects[i].setIsFalling(false);
             if (fallingObjects[i].getIsFriendly() == false) {
                 return -1;
@@ -85,9 +87,9 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
                              int minFallSpeed, 
                              int maxFallSpeed,
                              int probabilityOfUnfriendlyObjectSpawn,
-                             std::map<std::string, sf::Texture> &texturesForFallingObjects) {
+                             std::map<std::string, sf::Texture> &texturesForFallingObjects,
+                             bool sheepsFalling) {
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
-        
         if (fallingObjects[i].getIsFalling()==false && number > 0) {
             FallingObject newFallingObject = FallingObject();
             fallingObjects[i] = newFallingObject;
@@ -96,7 +98,10 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
             fallingObjects[i].spawn(rand()%(widthOfGameWindow-25), -10);
             fallingObjects[i].setSpeed(rand()%maxFallSpeed+minFallSpeed);
 
-            if (rand()%probabilityOfUnfriendlyObjectSpawn+1 == 1) {
+            if (sheepsFalling) {
+                fallingObjects[i].setTexture(texturesForFallingObjects["sheep"]);
+            }
+            else if (rand()%probabilityOfUnfriendlyObjectSpawn+1 == 1) {
                 // unfriendly objects
                 fallingObjects[i].setTexture(texturesForFallingObjects["bomb"]);
                 fallingObjects[i].setIsFriendly(false);
@@ -107,6 +112,7 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
                 // propability of chacha fall.
                 if ((rand()%100)<PROBABILITY_OF_CHACHA_SPAWN_IN_PERCENT) {
                     fallingObjects[i].setTexture(texturesForFallingObjects["chacha"]);
+                    fallingObjects[i].setIsMagicObject(true);
                 }
                 else {
                     fallingObjects[i].setTexture(texturesForFallingObjects["hinkalli"]);

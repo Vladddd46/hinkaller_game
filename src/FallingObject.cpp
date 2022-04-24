@@ -66,3 +66,11 @@ FallingObject::~FallingObject() {
     // std::cout << "Destructor: " << this << std::endl;
 }
 
+
+void FallingObject::setIsMagicObject(bool val) {
+    this->isMagicObject = val;
+}
+
+bool FallingObject::getIsMagicObject() {
+    return this->isMagicObject;
+}

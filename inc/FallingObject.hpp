@@ -9,12 +9,17 @@ private:
     bool isFalling;
     bool isFriendly;
     int speed;
+    bool isMagicObject;
 public:
     sf::Texture texture;
     sf::Sprite sprite;
     FallingObject(std::string texturePath, int posX, int posY);
 
     FallingObject();
+
+    void setIsMagicObject(bool val);
+
+    bool getIsMagicObject();
 
     void fall(float time);
 

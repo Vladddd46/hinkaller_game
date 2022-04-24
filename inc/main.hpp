@@ -17,11 +17,13 @@ void makeObjectsFall(FallingObject fallingObjects[], float time);
 void drawFallingObjects(sf::RenderWindow &window, FallingObject fallingObjects[]);
 void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHighOfGameWindow);
 int checkIfCharacterCaughtObject(Character &character, 
-								 FallingObject fallingObjects[]);
+                                 FallingObject fallingObjects[],
+                                 bool &chachaCought);
 void enableNewFallingObjects(FallingObject fallingObjects[], 
 							 int number, 
 							 int widthOfGameWindow, 
 							 int minFallSpeed, 
 							 int maxFallSpeed,
 							 int probabilityOfUnfriendlyObjectSpawn,
-							 std::map<std::string, sf::Texture> &texturesForFallingObjects);
+							 std::map<std::string, sf::Texture> &texturesForFallingObjects,
+							 bool sheepsFalling);
