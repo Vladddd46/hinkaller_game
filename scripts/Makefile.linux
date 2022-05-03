@@ -1,0 +1,11 @@
+PROJECT_DIR=..
+
+all: install clear
+
+install:
+	g++ -std=c++14 -I $(PROJECT_DIR)/inc -c $(PROJECT_DIR)/src/*
+	g++ *.o -o  sfml-app -L /usr/lib/x86_64-linux-gnu -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+clear:
+	rm -rf *.o *.hpp.gch
+clean: clear
+	rm -rf $(PROJECT_DIR)/sfml-app
