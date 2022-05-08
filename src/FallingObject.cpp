@@ -1,16 +1,14 @@
 #include "FallingObject.hpp"
 
-
-FallingObject::FallingObject(std::string texturePath, int posX, int posY) {
+FallingObject::FallingObject(std::string texturePath, int posX, int posY)
+    : posX{posX}, posY{posY}, isFalling{false}, isFriendly{true}, speed{rand()%4 + 3}, isMagicObject{false}
+{
     sprite.setPosition(posX, posY);
     texture.loadFromFile(texturePath);
     if (texturePath!="") {
         sprite.setTexture(texture);
     }
     sprite.scale(0.3, 0.3); // TODO: move scaling in constructor args.
-    isFalling = false;
-    this->speed=rand()%4 + 3; // TODO: move speed in constructor agrs.
-    this->isFriendly = true;
 }
 
 void FallingObject::fall(float time) {
@@ -46,13 +44,9 @@ bool FallingObject::getIsFriendly() {
     return this->isFriendly;
 }
 
-FallingObject::FallingObject() {
-    // std::cout << "Constructor" << std::endl; // debug
-    this->posX=0; // spawn position x
-    this->posY=0; // spawn position Y
-    this->isFalling = false; // if object is falling.
-    this->isFriendly = true; // is object can be gathered or not
-    this->speed=rand()%4 + 3; // speed of falling.
+FallingObject::FallingObject()
+    : posX{0}, posY{0}, isFalling{false}, isFriendly{true}, speed{rand()%4 + 3}, isMagicObject{false}
+{
     sprite.scale(0.3, 0.3); // object scaling
 }
 
