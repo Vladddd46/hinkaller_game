@@ -2,14 +2,13 @@
 
 #define CHARACTER_IMAGE_SCALE 0.2
 
-Character::Character(int posX, int posY, float rightBoarder) {
-    turnsLeft = true;
+Character::Character(int posX, int posY, float rightBoarder) 
+    : currentFrame{0}, turnsLeft{true}, rightBoarder{rightBoarder}, isDead{false}, sprite{}, textures{}
+{
     textures = loadCharacterTextures();
     sprite.setTexture(textures["idle"][0]);
     sprite.setPosition(posX, posY);
     sprite.scale(CHARACTER_IMAGE_SCALE, CHARACTER_IMAGE_SCALE);
-    this->rightBoarder = rightBoarder;
-    this->isDead=false;
 }
 
 void Character::move_right(float time) {
@@ -19,7 +18,7 @@ void Character::move_right(float time) {
     }
     currentFrame += 0.04*time;
     if (currentFrame >= 9) currentFrame -= 9;
-    sprite.setTexture(textures["runForward"][int(currentFrame)]);
+    sprite.setTexture(textures["runForward"][int(currentFrame)], true);
     turnsLeft = false;
 }
 
@@ -30,7 +29,7 @@ void Character::move_left(float time) {
     }
     currentFrame += 0.04*time;
     if (currentFrame >= 9) currentFrame -= 9;
-    sprite.setTexture(textures["runBack"][int(currentFrame)]);
+    sprite.setTexture(textures["runBack"][int(currentFrame)], true);
     turnsLeft = true;   
 }
 
