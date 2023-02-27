@@ -30,6 +30,7 @@ set(
         ${SRC_DIR}/Character.cpp
         ${SRC_DIR}/FallingObject.cpp
         ${SRC_DIR}/loadTextures.cpp
+        ${SRC_DIR}/Game.cpp
         ${SRC_DIR}/main.cpp
         ${SRC_DIR}/Score.cpp
         ${SRC_DIR}/Text.cpp

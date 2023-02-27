@@ -1,3 +1,5 @@
+#ifndef CHARACTER_HPP
+#define CHARACTER_HPP
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <map>
@@ -21,3 +23,4 @@ public:
     bool getIsDead();
     void stay();
 };
+#endif//CHARACTER_HPP

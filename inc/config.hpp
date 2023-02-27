@@ -1,3 +1,5 @@
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
 #define GAME_NAME "HINKELLER"
 #define BACK_GROUND_PATH "./textures/backgrounds/background.png"
 #define SCORE_FONT_PATH "./fonts/arial.ttf"
@@ -34,3 +36,4 @@
 // porbability of spawning chacha falling object. In percentage. 
 // 50-50% of sawning friendly objects will be chacha
 #define PROBABILITY_OF_CHACHA_SPAWN_IN_PERCENT 15
+#endif//CONFIG_HPP

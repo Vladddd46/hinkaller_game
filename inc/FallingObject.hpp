@@ -1,3 +1,5 @@
+#ifndef FAILING_OBJECT_HPP
+#define FAILING_OBJECT_HPP
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
@@ -41,3 +43,4 @@ public:
 
     ~FallingObject();
 };
+#endif//FAILING_OBJECT_HPP
