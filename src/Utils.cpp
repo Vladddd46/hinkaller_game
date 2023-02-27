@@ -1,4 +1,4 @@
-#include "main.hpp"
+#include "Utils.hpp"
 
 // closes window if user exit window.
 void closeWindowEventCheck(sf::RenderWindow &window) {
@@ -31,7 +31,7 @@ void handleCharacterMovements(Character &character, float time) {
  *        fallingObjects - list of objects, which can fall.
  *        time - ...
  */
-void makeObjectsFall(FallingObject fallingObjects[], float time) {
+void makeObjectsFall(FallingObjectArrayType &fallingObjects, float time) {
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY; i++) {
         if (fallingObjects[i].getIsFalling()==true) {
             fallingObjects[i].fall(time);
@@ -39,9 +39,8 @@ void makeObjectsFall(FallingObject fallingObjects[], float time) {
     }
 }
 
-
 // draws each falling object.
-void drawFallingObjects(sf::RenderWindow &window, FallingObject fallingObjects[]) {
+void drawFallingObjects(sf::RenderWindow &window, FallingObjectArrayType &fallingObjects) {
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
         if (fallingObjects[i].getIsFalling()==true) {
             window.draw(fallingObjects[i].sprite);
@@ -49,9 +48,10 @@ void drawFallingObjects(sf::RenderWindow &window, FallingObject fallingObjects[]
     }
 }
 
+
 // Falling objects, which are out of screen become not falling.
 // Property ifFalling in this objects is set false.
-void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHighOfGameWindow) {
+void disableObjectsWhichAreOutOfScreen(FallingObjectArrayType &fallingObjects, int maxHighOfGameWindow) {
     for (int i=0;i<MAX_FALLING_OBJECTS_IN_ARRAY;i++) {
         if (fallingObjects[i].sprite.getPosition().y > maxHighOfGameWindow+100) {
             fallingObjects[i].setIsFalling(false);
@@ -59,10 +59,11 @@ void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHi
     }
 }
 
+
 // Checks whether user object and falling object intersects.
 // returns number of intersections.
 int checkIfCharacterCaughtObject(Character &character, 
-                                 FallingObject fallingObjects[],
+                                 FallingObjectArrayType &fallingObjects,
                                  bool &chachaCought) {
     int numberOfCaughtObjects = 0;
 
@@ -80,8 +81,7 @@ int checkIfCharacterCaughtObject(Character &character,
     return numberOfCaughtObjects;
 }
 
-
-void enableNewFallingObjects(FallingObject fallingObjects[], 
+void enableNewFallingObjects(FallingObjectArrayType &fallingObjects, 
                              int number, 
                              int widthOfGameWindow, 
                              int minFallSpeed, 
@@ -123,4 +123,3 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
         }
     }
 }
-

@@ -1,25 +1,31 @@
+#ifndef UTILS_HPP
+#define UTILS_HPP
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <SFML/Audio.hpp>
 #include <map>
 #include <string>
-#include "loadTextures.hpp"
+#include <array>
 #include "Character.hpp"
 #include "config.hpp"
 #include "Background.hpp"
 #include "FallingObject.hpp"
 #include "Score.hpp"
 #include "Text.hpp"
-#include <SFML/Audio.hpp>
+
+typedef std::array<FallingObject, MAX_FALLING_OBJECTS_IN_ARRAY> FallingObjectArrayType;
+
 
 void closeWindowEventCheck(sf::RenderWindow &window);
 void handleCharacterMovements(Character &character, float time);
-void makeObjectsFall(FallingObject fallingObjects[], float time);
-void drawFallingObjects(sf::RenderWindow &window, FallingObject fallingObjects[]);
-void disableObjectsWhichAreOutOfScreen(FallingObject fallingObjects[], int maxHighOfGameWindow);
+void makeObjectsFall(FallingObjectArrayType &fallingObjects, float time);
+
+void drawFallingObjects(sf::RenderWindow &window, FallingObjectArrayType &fallingObjects);
+
+void disableObjectsWhichAreOutOfScreen(FallingObjectArrayType &fallingObjects, int maxHighOfGameWindow);
 int checkIfCharacterCaughtObject(Character &character, 
-                                 FallingObject fallingObjects[],
+                                 FallingObjectArrayType &fallingObjects,
                                  bool &chachaCought);
-void enableNewFallingObjects(FallingObject fallingObjects[], 
+void enableNewFallingObjects(FallingObjectArrayType &fallingObjects, 
 							 int number, 
 							 int widthOfGameWindow, 
 							 int minFallSpeed, 
@@ -27,3 +33,6 @@ void enableNewFallingObjects(FallingObject fallingObjects[],
 							 int probabilityOfUnfriendlyObjectSpawn,
 							 std::map<std::string, sf::Texture> &texturesForFallingObjects,
 							 bool sheepsFalling);
+
+
+#endif//UTILS_HPP

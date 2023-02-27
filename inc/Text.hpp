@@ -1,3 +1,5 @@
+#ifndef TEXT_HPP
+#define TEXT_HPP
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
@@ -12,3 +14,4 @@ public:
     
     void setText(std::string msg);
 };
+#endif//TEXT_HPP

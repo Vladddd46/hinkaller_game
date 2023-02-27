@@ -1,3 +1,5 @@
+#ifndef SCORE_HPP
+#define SCORE_HPP
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
@@ -14,3 +16,4 @@ public:
 
     void setScore(int score);
 };
+#endif//SCORE_HPP
